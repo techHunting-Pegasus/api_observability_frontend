@@ -16,6 +16,50 @@ export interface Project {
   bundleId: string;
   createdAt: string;
   updatedAt: string;
+  members?: Array<{ role: ProjectRole }>;
+}
+
+export type ProjectRole = "OWNER" | "APP_MANAGER";
+
+export interface ProjectMember {
+  id: string;
+  userId: string;
+  role: ProjectRole;
+  createdAt: string;
+  user: {
+    id: string;
+    email: string;
+  };
+}
+
+export interface AddProjectMemberResponse {
+  success: boolean;
+  message: string;
+  member: Omit<ProjectMember, "userId">;
+}
+
+export interface UpdateProjectMemberRoleResponse {
+  success: boolean;
+  message: string;
+  newOwnerId?: string;
+}
+
+export interface ProjectApiKeyResponse {
+  success: boolean;
+  message: string;
+  project: Pick<Project, "id" | "name" | "bundleId">;
+  apiKey: string;
+}
+
+export interface GetProjectApiKeyResponse {
+  success: boolean;
+  project: Pick<Project, "id" | "name" | "bundleId">;
+  apiKey: string;
+}
+
+export interface ProjectMemberActionResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface CreateProjectInput {

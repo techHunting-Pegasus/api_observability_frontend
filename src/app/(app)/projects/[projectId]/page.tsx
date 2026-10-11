@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronRight, RefreshCw, ScrollText, SearchX, Trash2 } from "lucide-react";
+import { ChevronRight, RefreshCw, ScrollText, SearchX, Settings, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState, ErrorState, PageHeader } from "@/components/ui/feedback";
 import { useToast } from "@/components/ui/toast";
@@ -60,6 +60,9 @@ export default function ProjectLogsPage() {
           <>
             <Button onClick={logs.reload} disabled={logs.loading}>
               <RefreshCw className={logs.loading ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} /> Refresh
+            </Button>
+            <Button onClick={() => router.push(`/projects/${projectId}/settings`)}>
+              <Settings className="h-3.5 w-3.5" /> Settings
             </Button>
             <Button variant="danger" onClick={() => setDeleteProjectOpen(true)} disabled={!project}>
               <Trash2 className="h-3.5 w-3.5" /> Delete Project

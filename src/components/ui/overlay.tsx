@@ -100,13 +100,14 @@ interface ConfirmDialogProps {
   title: string;
   children: ReactNode;
   confirmLabel: string;
+  pendingLabel?: string;
   errorTitle: string;
   onConfirm: () => Promise<void>;
   onClose: () => void;
 }
 
-/** Destructive confirmation: blocks duplicate clicks, shows "Deleting...", surfaces errors with a retry. */
-export function ConfirmDialog({ open, title, children, confirmLabel, errorTitle, onConfirm, onClose }: ConfirmDialogProps) {
+/** Confirmation dialog that blocks duplicate clicks and surfaces errors with a retry. */
+export function ConfirmDialog({ open, title, children, confirmLabel, pendingLabel = "Deleting...", errorTitle, onConfirm, onClose }: ConfirmDialogProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inFlight = useRef(false);
@@ -147,7 +148,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, errorTitle,
           Cancel
         </Button>
         <Button variant="danger" loading={busy} onClick={() => void run()}>
-          {busy ? "Deleting..." : error ? "Try Again" : confirmLabel}
+          {busy ? pendingLabel : error ? "Try Again" : confirmLabel}
         </Button>
       </div>
     </Modal>

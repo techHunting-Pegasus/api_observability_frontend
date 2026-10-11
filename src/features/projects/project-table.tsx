@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Trash2 } from "lucide-react";
+import { ArrowUpRight, Settings, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/feedback";
 import { formatDate } from "@/lib/utils/format";
@@ -33,6 +33,14 @@ export function ProjectTable({ projects, onDelete }: { projects: Project[]; onDe
                 <div className="flex justify-end gap-2">
                   <Link href={`/projects/${p.id}`} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-line-strong bg-white px-2.5 text-xs font-medium hover:bg-canvas">
                     Open <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
+                  <Link
+                    href={`/projects/${p.id}/settings`}
+                    aria-label={`Settings for ${p.name}`}
+                    title="Project settings"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line-strong bg-white hover:bg-canvas"
+                  >
+                    <Settings className="h-3.5 w-3.5" />
                   </Link>
                   <Button size="sm" onClick={() => onDelete(p)} aria-label={`Delete project ${p.name}`} className="text-red-600 hover:bg-red-50">
                     <Trash2 className="h-3.5 w-3.5" /> Delete
