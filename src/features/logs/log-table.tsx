@@ -10,19 +10,41 @@ import { MethodLabel, StatusBadge } from "./status-badge";
 
 interface Props {
   logs: ApiRequestLog[];
+  selectedIds: Set<string>;
   onOpen: (log: ApiRequestLog) => void;
   onCurl: (log: ApiRequestLog) => void;
   onDelete: (log: ApiRequestLog) => void;
+  onToggleSelect: (requestId: string) => void;
+  onToggleAll: () => void;
 }
 
 const stop = (e: MouseEvent | KeyboardEvent) => e.stopPropagation();
 
-export function LogTable({ logs, onOpen, onCurl, onDelete }: Props) {
+export function LogTable({ logs, selectedIds, onOpen, onCurl, onDelete, onToggleSelect, onToggleAll }: Props) {
+  const selectedVisibleCount = logs.filter((log) => selectedIds.has(log.requestId)).length;
+  const allVisibleSelected = logs.length > 0 && selectedVisibleCount === logs.length;
+  const someVisibleSelected = selectedVisibleCount > 0 && !allVisibleSelected;
+
   return (
     <div className="overflow-x-auto rounded-lg border border-line bg-white">
       <table className="w-full min-w-[980px] text-left text-sm">
         <thead className="border-b border-line bg-canvas/60 text-xs text-ink-soft">
           <tr>
+            <th className="w-28 px-3 py-2.5 font-medium">
+              <label className="flex items-center gap-2 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  ref={(element) => {
+                    if (element) element.indeterminate = someVisibleSelected;
+                  }}
+                  onChange={onToggleAll}
+                  aria-label="Select all visible logs"
+                  className="h-4 w-4 rounded border-line-strong accent-brand"
+                />
+                Select all
+              </label>
+            </th>
             {["Status", "Method", "URL", "User", "Response Time", "Date / Time", "Request ID", "Actions"].map((h) => (
               <th key={h} className={cn("px-3 py-2.5 font-medium", h === "Actions" && "text-right")}>
                 {h}
@@ -48,6 +70,15 @@ export function LogTable({ logs, onOpen, onCurl, onDelete }: Props) {
                 aria-label={`${log.method} ${path}, status ${log.responseStatus ?? "error"}. Open details`}
                 className="cursor-pointer hover:bg-canvas/70 focus-visible:bg-canvas/70"
               >
+                <td className="px-3 py-2.5" onClick={stop} onKeyDown={stop}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(log.requestId)}
+                    onChange={() => onToggleSelect(log.requestId)}
+                    aria-label={`Select log ${log.requestId}`}
+                    className="h-4 w-4 rounded border-line-strong accent-brand"
+                  />
+                </td>
                 <td className="px-3 py-2.5">
                   <StatusBadge status={log.responseStatus} />
                 </td>

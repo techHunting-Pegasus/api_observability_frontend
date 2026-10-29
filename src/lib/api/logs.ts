@@ -14,3 +14,7 @@ export function getProjectLog(projectId: string, requestId: string, signal?: Abo
 export function deleteProjectLog(projectId: string, requestId: string) {
   return apiRequest<DeleteLogResponse>(`${base(projectId)}/${encodeURIComponent(requestId)}`, { method: "DELETE" });
 }
+
+export function deleteProjectLogs(projectId: string, requestIds: string[]) {
+  return Promise.allSettled(requestIds.map((requestId) => deleteProjectLog(projectId, requestId)));
+}
