@@ -2,10 +2,33 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Activity, FolderKanban, LogOut, Menu, X } from "lucide-react";
+import { Activity, BarChart3, Bug, FolderKanban, LogOut, Menu, ScrollText, Settings, X, type LucideIcon } from "lucide-react";
 import { useAuth } from "@/features/auth/auth-provider";
 import { Skeleton } from "@/components/ui/feedback";
 import { cn } from "@/lib/utils/cn";
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  active: boolean;
+}
+
+function NavLink({ item }: { item: NavItem }) {
+  const Icon = item.icon;
+  return (
+    <Link
+      href={item.href}
+      aria-current={item.active ? "page" : undefined}
+      className={cn(
+        "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium",
+        item.active ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-black/5",
+      )}
+    >
+      <Icon className="h-4 w-4" /> {item.label}
+    </Link>
+  );
+}
 
 function Brand() {
   return (
@@ -38,18 +61,28 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
+  // Inside a project the sidebar also lists that project's sections.
+  const projectBase = pathname.match(/^\/projects\/[^/]+/)?.[0] ?? null;
+  const projectLinks: NavItem[] = projectBase
+    ? [
+        { href: projectBase, label: "Logs", icon: ScrollText, active: pathname === projectBase || pathname.startsWith(`${projectBase}/logs`) },
+        { href: `${projectBase}/analytics`, label: "Analytics", icon: BarChart3, active: pathname.startsWith(`${projectBase}/analytics`) },
+        { href: `${projectBase}/debug`, label: "Debug view", icon: Bug, active: pathname.startsWith(`${projectBase}/debug`) },
+        { href: `${projectBase}/settings`, label: "Settings", icon: Settings, active: pathname.startsWith(`${projectBase}/settings`) },
+      ]
+    : [];
+
   const nav = (
     <nav className="flex-1 space-y-1 px-3 py-4" aria-label="Main">
-      <Link
-        href="/dashboard"
-        aria-current={pathname.startsWith("/dashboard") || pathname.startsWith("/projects") ? "page" : undefined}
-        className={cn(
-          "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium",
-          pathname.startsWith("/dashboard") || pathname.startsWith("/projects") ? "bg-brand-soft text-brand" : "text-ink-soft hover:bg-black/5",
-        )}
-      >
-        <FolderKanban className="h-4 w-4" /> Projects
-      </Link>
+      <NavLink item={{ href: "/dashboard", label: "Projects", icon: FolderKanban, active: !projectBase }} />
+      {projectLinks.length > 0 && (
+        <>
+          <p className="px-3 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">This project</p>
+          {projectLinks.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </>
+      )}
     </nav>
   );
 

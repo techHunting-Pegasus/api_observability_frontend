@@ -17,8 +17,9 @@ const config: Config = {
       keyframes: {
         slideIn: { from: { transform: "translateX(24px)", opacity: "0" }, to: { transform: "none", opacity: "1" } },
         pop: { from: { transform: "scale(.97)", opacity: "0" }, to: { transform: "none", opacity: "1" } },
+        flash: { from: { backgroundColor: "#cdebe7" }, to: { backgroundColor: "transparent" } },
       },
-      animation: { slideIn: "slideIn .18s ease-out", pop: ".14s pop ease-out" },
+      animation: { slideIn: "slideIn .18s ease-out", pop: ".14s pop ease-out", flash: "flash 1.6s ease-out" },
     },
   },
   plugins: [],

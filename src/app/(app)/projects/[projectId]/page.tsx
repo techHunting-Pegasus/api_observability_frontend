@@ -28,7 +28,7 @@ export default function ProjectLogsPage() {
   const logs = useAsync((s) => getProjectLogs(projectId, s), [projectId]);
   const project = projects.data?.find((p) => p.id === projectId) ?? null;
 
-  const [field, setField] = useState<SearchField>("requestId");
+  const [field, setField] = useState<SearchField>("all");
   const [query, setQuery] = useState("");
   const [order, setOrder] = useState<SortOrder>("newest");
   const debounced = useDebounced(query, 250);

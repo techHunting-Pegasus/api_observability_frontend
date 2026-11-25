@@ -69,3 +69,41 @@ export function statusTone(status: number | null): StatusTone {
   if (status >= 200) return "success";
   return "neutral";
 }
+
+export function formatCount(n: number | null | undefined): string {
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  return n.toLocaleString("en-US");
+}
+
+/** 14:03:22.481 in local time, for the live debug feed. */
+export function formatTimeMs(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  const time = d.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  return `${time}.${String(d.getMilliseconds()).padStart(3, "0")}`;
+}
+
+export function formatDateTimeSeconds(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", second: "2-digit" });
+}
+
+const PLATFORM_LABELS: Record<string, string> = { ios: "iOS", android: "Android", web: "Web", macos: "macOS" };
+
+export function platformLabel(platform: string): string {
+  const key = platform.toLowerCase();
+  return PLATFORM_LABELS[key] ?? (platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : "Unknown");
+}
+
+/** "IN" → "India". Falls back to the raw value ("unknown", or codes the browser doesn't know). */
+export function countryName(code: string): string {
+  if (!/^[A-Za-z]{2}$/.test(code)) return code === "unknown" ? "Unknown" : code;
+  try {
+    return new Intl.DisplayNames(["en"], { type: "region" }).of(code.toUpperCase()) ?? code;
+  } catch {
+    return code;
+  }
+}

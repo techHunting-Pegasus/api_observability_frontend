@@ -3,10 +3,13 @@ import { clearSession, readSession, UNAUTHORIZED_EVENT } from "@/lib/session";
 
 export class ApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  /** "GET /api/v1/..." of the failed call, shown on error screens to make bug reports easy. */
+  endpoint?: string;
+  constructor(status: number, message: string, endpoint?: string) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.endpoint = endpoint;
   }
 }
 
@@ -56,7 +59,7 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") throw err;
-    throw new ApiError(0, "Network error. Check your connection and try again.");
+    throw new ApiError(0, "Network error. Check your connection and try again.", `${method} ${path}`);
   }
 
   const text = await res.text();
@@ -75,7 +78,7 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
       if (typeof window !== "undefined") window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
     }
     const fallback = DEFAULT_MESSAGES[res.status] ?? (res.status >= 500 ? DEFAULT_MESSAGES[500] : "Something went wrong.");
-    throw new ApiError(res.status, extractMessage(payload, fallback));
+    throw new ApiError(res.status, extractMessage(payload, fallback), `${method} ${path}`);
   }
 
   return payload as T;
